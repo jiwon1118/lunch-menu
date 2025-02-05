@@ -5,16 +5,17 @@ import psycopg
 import os
 from dotenv import load_dotenv
 
-st.title("순신 점심 기록장")
+st.title("순신 점심 기록장!")
 st.write("""
 Today's *LUNCH!*
 
 ![img](https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMjA0MThfMTcx%2FMDAxNjUwMjg2NTA2OTUz.KAmjW9nEn4DkwLbDXK9K_PQvPhE1ebEYaVIN8xfyF7Qg._lVvsBJN7gsdkm35f1PExK1LdtcoiMC1qpRjHaOUIJIg.JPEG.exo8010%2Fresource%25A3%25A863%25A3%25A9.jpg&type=sc960_832)""")
 
 load_dotenv()
+db_name = os.getenv("DB_NAME")
 DB_CONFIG = {
     "user": os.getenv("DB_USERNAME"),
-    "dbname": os.getenv("DB_NAME"),
+    "dbname": db_name,
     "password": os.getenv("DB_PASSWORD"),
     "host": os.getenv("DB_HOST"),
     "port": os.getenv("DB_PORT")
@@ -80,9 +81,14 @@ gdf = not_na_rdf.groupby('member_name')['menu_name'].count().reset_index()
 gdf
 
 # matplotlib로 바 차트 그리기
-fig, ax = plt.subplots()
-gdf.plot(x="member_name", y="menu_name", kind="bar", ax=ax)
-st.pyplot(fig)
+#오류 안 뜨게 하기
+try:
+    fig, ax = plt.subplots()
+    gdf.plot(x="member_name", y="menu_name", kind="bar", ax=ax)
+    st.pyplot(fig)
+except Exception as e:
+    st.warning(f"차트를 그리기에 충분한 데이터가 없습니다.")
+    print(f"Exception:{e}") 
 
 
 # TODO
