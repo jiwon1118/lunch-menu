@@ -5,6 +5,9 @@ import psycopg
 import os
 from dotenv import load_dotenv
 
+st.markdown("# Main page 🐽")
+st.sidebar.markdown("# Main page 🐽")
+
 st.title("순신 점심 기록장!")
 st.write("""
 Today's *LUNCH!*
@@ -35,21 +38,28 @@ def insert_menu(menu_name, member_name, dt):
         conn.commit()
         cursor.close()
         conn.close()
+        return True
     except Exception as e:
         print(f"Exception:{e}")
+        return False
 
+
+df = pd.read_csv('note/menu.csv')
 
 st.subheader("입력")
 menu_name = st.text_input("메뉴 이름", placeholder="예: 김치찌개")
-member_name = st.text_input("먹은 사람", value="jiwon")
+member_name = st.selectbox("먹은 사람", df["ename"])
+#member_name = st.text_input("먹은 사람", value="jiwon")
 dt = st.date_input("먹은 날짜")
 
 isPress = st.button("메뉴 저장")
 
 if isPress:
     if menu_name and member_name and dt:
-        insert_menu(menu_name, member_name, dt)
-        st.success(f"입력 성공")
+        if insert_menu(menu_name, member_name, dt):
+            st.success(f"입력 성공")
+        else:
+            st.error(f"입력 실패")
     else:
         st.warning(f"모든 값을 입력해주세요!")
 
