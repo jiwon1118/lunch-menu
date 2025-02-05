@@ -25,15 +25,18 @@ def get_connection():
     return psycopg.connect(**DB_CONFIG)
 
 def insert_menu(menu_name, member_name, dt):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
             (menu_name, member_name, dt)
-        )
-    conn.commit()
-    cursor.close()
-    conn.close()
+            )
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"Exception:{e}")
 
 
 st.subheader("입력")
