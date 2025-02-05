@@ -3,7 +3,7 @@ name = "lunch-menu"
 version = "0.2.1"
 description = "Default template for PDM package"
 authors = [
-    {name = "<jiwon1118>", email = "<b23386585@gmail.com>"},
+    {name = "jiwon1118", email = "b23386585@gmail.com"},
 ]
 dependencies = ["pandas>=2.2.3", "streamlit>=1.41.1", "matplotlib>=3.10.0", "psycopg[binary,pool]>=3.2.4", "python-dotenv>=1.0.1"]
 requires-python = ">=3.10"
