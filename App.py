@@ -14,6 +14,8 @@ Today's *LUNCH!*
 
 ![img](https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMjA0MThfMTcx%2FMDAxNjUwMjg2NTA2OTUz.KAmjW9nEn4DkwLbDXK9K_PQvPhE1ebEYaVIN8xfyF7Qg._lVvsBJN7gsdkm35f1PExK1LdtcoiMC1qpRjHaOUIJIg.JPEG.exo8010%2Fresource%25A3%25A863%25A3%25A9.jpg&type=sc960_832)""")
 
+members = {"SEO": 5, "TOM": 1, "cho": 2, "hyun": 3, "nuni": 10, "JERRY": 4, "jacob": 7, "jiwon": 6, "lucas": 9, "heejin": 8}
+
 load_dotenv()
 db_name = os.getenv("DB_NAME")
 DB_CONFIG = {
@@ -27,13 +29,13 @@ DB_CONFIG = {
 def get_connection():
     return psycopg.connect(**DB_CONFIG)
 
-def insert_menu(menu_name, member_name, dt):
+def insert_menu(menu_name, member_id, dt):
     try:
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO lunch_menu (menu_name, member_name, dt) VALUES (%s, %s, %s);",
-            (menu_name, member_name, dt)
+            "INSERT INTO lunch_menu (menu_name, member_id, dt) VALUES (%s, %s, %s);",
+            (menu_name, member_id, dt)
             )
         conn.commit()
         cursor.close()
@@ -44,19 +46,21 @@ def insert_menu(menu_name, member_name, dt):
         return False
 
 
-df = pd.read_csv('note/menu.csv')
-
 st.subheader("입력")
 menu_name = st.text_input("메뉴 이름", placeholder="예: 김치찌개")
-member_name = st.selectbox("먹은 사람", df["ename"])
-#member_name = st.text_input("먹은 사람", value="jiwon")
+# selectbox 사용
+# member_name = st.text_input("먹은 사람", value="jiwon")
+member_name = st.selectbox("먹은 사람", list(members.keys()), index = list(members.keys()).index('jiwon'))
+# member_id = members 의 키
+member_id = members[member_name]
+
 dt = st.date_input("먹은 날짜")
 
 isPress = st.button("메뉴 저장")
 
 if isPress:
-    if menu_name and member_name and dt:
-        if insert_menu(menu_name, member_name, dt):
+    if menu_name and member_id and dt:
+        if insert_menu(menu_name, member_id, dt):
             st.success(f"입력 성공")
         else:
             st.error(f"입력 실패")
@@ -65,7 +69,7 @@ if isPress:
 
 
 st.subheader("확인")
-query =" SELECT menu_name, member_name, dt FROM lunch_menu ORDER BY dt DESC;"
+query =" SELECT menu_name, member_id, dt FROM lunch_menu ORDER BY dt DESC;"
 
 conn = get_connection()
 cursor = conn.cursor()
@@ -80,14 +84,13 @@ conn.close()
 selected_df = pd.DataFrame(rows, columns=['menu_name','member_name','dt'])
 selected_df
 
-
 st.subheader("통계")
 #df = pd.read_csv('note/menu.csv')
-
 #start_idx = df.columns.get_loc('2025-01-07')
 #rdf= df.melt(id_vars=['ename'], value_vars=(df.columns[start_idx:-2]),var_name='dt', value_name='menu')
 #not_na_rdf = rdf[~rdf['menu'].isin(['-','<결석>','x'])]
 #gdf = not_na_rdf.groupby('ename')['menu'].count().reset_index()
+
 
 not_na_rdf = selected_df[~selected_df['menu_name'].isin(['-','<결석>','x'])]
 gdf = not_na_rdf.groupby('member_name')['menu_name'].count().reset_index()
