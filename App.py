@@ -79,6 +79,8 @@ FROM
 	lunch_menu l 
     inner join member m
 	on l.member_id = m.id
+ORDER BY 
+    dt DESC;
 ;
 """
 
@@ -131,7 +133,8 @@ if isPress:
     not_na_rdf = rdf[~rdf['menu'].isin(['-','<결석>','x'])]
     
     for _, row  in not_na_rdf.iterrows():
-        insert_menu(row['menu'], row['ename'], row['dt'])
+        m_id = members[row['ename']]
+        insert_menu(row['menu'], m_id, row['dt'])
     st.success(f"벌크 인서트 완료")
 
 
