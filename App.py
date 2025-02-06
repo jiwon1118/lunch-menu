@@ -67,6 +67,48 @@ if isPress:
     else:
         st.warning(f"모든 값을 입력해주세요!")
 
+isPress = st.button("오늘의 점심을 입력 안한 사람")
+query = """
+SELECT
+	m.name,
+	count(l.id) as ctid
+FROM
+	member m
+	LEFT JOIN lunch_menu l
+	ON l.member_id = m.id
+	AND l.dt = CURRENT_DATE
+GROUP BY
+	m.id,
+	m.name
+HAVING
+	count(l.id) = 0
+ORDER BY
+	ctid desc
+;
+"""
+
+if isPress:
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        if not rows:
+            st.write("모두 입력 했습니다")
+        else:
+            # 이름만 추출하여 리스트로 변환
+            names = [row[0] for row in rows]
+            # 리스트를 하나의 문자열로 결합
+            names_str = ", ".join(names)
+            st.success(f"범인은?!:  {names_str} 입니다.")
+        
+    except Exception as e:
+        st.warning(f"조회 중 오류가 발생했습니다")
+        print(f"Exception: {e}")
+
+
 
 st.subheader("확인")
 #query =  "SELECT menu_name, member_id, dt FROM lunch_menu ORDER BY dt DESC;"
@@ -137,4 +179,12 @@ if isPress:
         insert_menu(row['menu'], m_id, row['dt'])
     st.success(f"벌크 인서트 완료")
 
-
+# TODO 아래 메시지를 성공/실패 구분
+# 모두 성공했으면 성공 / 모두 성공하지 않은 경우는
+    for _, row in not_na_df.iterrows():
+        m_id = members[row['ename']]
+        insert_menu(row['menu'], m_id, row['dt'])
+    # IF 총건수 == 성공건수가 같으면, 또는 실패가 없으면 st.success
+        # st.success(f"벌크인서트 성공")
+    # ELES
+        # 에러메시지 출력 -> 총건 00 중 00 실패
