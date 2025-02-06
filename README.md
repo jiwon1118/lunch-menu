@@ -26,6 +26,30 @@ CREATE TABLE public.lunch_menu (
 	dt date NOT NULL,
 	CONSTRAINT lunch_menu_pk PRIMARY KEY (id)
 );
+
+ALTER TABLE lunch_menu
+ADD CONSTRAINT unique_member_dt UNIQUE (member_name, dt)
+
+INSERT INTO member(name)
+VALUES
+('TOM'),
+('cho'),
+('hyun'),
+('JERRY'),
+('SEO'),
+('jiwon'),
+('jacob'),
+('heejin'),
+('lucas'),
+('nuni')
+;
+
+SELECT jsonb_object_agg(name, id) 
+FROM (
+	select name, id from member order by id
+) temp;
+
+
 ```
 ## DEV
 - DB
