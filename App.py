@@ -69,7 +69,18 @@ if isPress:
 
 
 st.subheader("확인")
-query =" SELECT menu_name, member_id, dt FROM lunch_menu ORDER BY dt DESC;"
+#query =  "SELECT menu_name, member_id, dt FROM lunch_menu ORDER BY dt DESC;"
+query = """
+SELECT 
+	l.menu_name, 
+	m.name, 
+	l.dt
+FROM 
+	lunch_menu l 
+    inner join member m
+	on l.member_id = m.id
+;
+"""
 
 conn = get_connection()
 cursor = conn.cursor()
