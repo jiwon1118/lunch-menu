@@ -67,6 +67,9 @@ if isPress:
     else:
         st.warning(f"모든 값을 입력해주세요!")
 
+# TODO
+# 오늘  점심 임력 안 한사람을 알 수 있는 버튼 만들기
+
 isPress = st.button("오늘의 점심을 입력 안한 사람")
 query = """
 SELECT
@@ -169,22 +172,30 @@ isPress = st.button("한방에 인서트")
 
 
 if isPress:
-    df = pd.read_csv('note/menu.csv')
-    start_idx = df.columns.get_loc('2025-01-07')
-    rdf= df.melt(id_vars=['ename'], value_vars=(df.columns[start_idx:-2]),var_name='dt', value_name='menu')
-    not_na_rdf = rdf[~rdf['menu'].isin(['-','<결석>','x'])]
+    try:
+        df = pd.read_csv('note/menu.csv')
+        start_idx = df.columns.get_loc('2025-01-07')
+        rdf= df.melt(id_vars=['ename'], value_vars=(df.columns[start_idx:-2]),var_name='dt', value_name='menu')
+        not_na_rdf = rdf[~rdf['menu'].isin(['-','<결석>','x'])]
     
-    for _, row  in not_na_rdf.iterrows():
-        m_id = members[row['ename']]
-        insert_menu(row['menu'], m_id, row['dt'])
-    st.success(f"벌크 인서트 완료")
+# TODO 
+# 벌크인서트 버튼이 눌리면  성공/실패 구분해서 완료 메시지 출력하기
+        # 총 건수
+        total_count = len(not_na_rdf)
+        # 성공 건수 + 성공은 insert 하기
+        success_count = 0
+        for _, row in not_na_rdf.iterrows():
+            m_id = members[row['ename']]
+            if insert_menu(row['menu'], m_id, row['dt']):
+                success_count += 1
+        # 실패 건수        
+        fail_count = total_count - success_count
+        
+        if total_count == success_count:
+            st.success(f"벌크인서트 성공: 총{total_count}건")
+        else: 
+            st.error(f"총건 {total_count}건중 {fail_count}건 실패")
 
-# TODO 아래 메시지를 성공/실패 구분
-# 모두 성공했으면 성공 / 모두 성공하지 않은 경우는
-    for _, row in not_na_df.iterrows():
-        m_id = members[row['ename']]
-        insert_menu(row['menu'], m_id, row['dt'])
-    # IF 총건수 == 성공건수가 같으면, 또는 실패가 없으면 st.success
-        # st.success(f"벌크인서트 성공")
-    # ELES
-        # 에러메시지 출력 -> 총건 00 중 00 실패
+    except Exception as e:
+        st.warning(f"조회 중 오류가 발생했습니다")
+        print(f"Exception: {e}")
