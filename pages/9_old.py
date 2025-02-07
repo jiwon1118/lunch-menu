@@ -86,7 +86,7 @@ if isPress:
 
 
 st.subheader("확인")
-select_df = select_table(menu_name, member_name, dt)
+select_df = select_table()
 select_df
 
 
