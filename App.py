@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from lunch_menu.db import get_connection
-from lunch_menu.db import select_table
+from lunch_menu.db import select_table, insert_menu
 
 st.set_page_config(page_title="Main", page_icon="💜")
 st.markdown("# Main page 🐽")
@@ -14,11 +14,6 @@ Today's *LUNCH!*
 
 ![img](https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMjA0MThfMTcx%2FMDAxNjUwMjg2NTA2OTUz.KAmjW9nEn4DkwLbDXK9K_PQvPhE1ebEYaVIN8xfyF7Qg._lVvsBJN7gsdkm35f1PExK1LdtcoiMC1qpRjHaOUIJIg.JPEG.exo8010%2Fresource%25A3%25A863%25A3%25A9.jpg&type=sc960_832)""")
 
-
-# TODO
-# 오늘  점심 임력 안 한사람을 알 수 있는 버튼 만들기
-
-isPress = st.button("오늘의 점심을 입력 안한 사람")
 query = """
 SELECT
 	m.name,
@@ -38,43 +33,15 @@ ORDER BY
 ;
 """
 
-if isPress:
-    try:
-        conn = get_connection()
-        cursor = conn.cursor()
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        if not rows:
-            st.write("모두 입력 했습니다")
-        else:
-            # 이름만 추출하여 리스트로 변환
-            names = [row[0] for row in rows]
-            # 리스트를 하나의 문자열로 결합
-            names_str = ", ".join(names)
-            st.success(f"범인은?!:  {names_str} 입니다.")
-        
-    except Exception as e:
-        st.warning(f"조회 중 오류가 발생했습니다")
-        print(f"Exception: {e}")
-
-
 
 st.subheader("확인")
 
-select_df = select_table(menu_name, member_name, dt)
+select_df = select_table()
 select_df
 
 
 
 st.subheader("통계")
-#df = pd.read_csv('note/menu.csv')
-#start_idx = df.columns.get_loc('2025-01-07')
-#rdf= df.melt(id_vars=['ename'], value_vars=(df.columns[start_idx:-2]),var_name='dt', value_name='menu')
-#not_na_rdf = rdf[~rdf['menu'].isin(['-','<결석>','x'])]
-#gdf = not_na_rdf.groupby('ename')['menu'].count().reset_index()
-
 
 not_na_rdf = select_df[~select_df['menu_name'].isin(['-','<결석>','x'])]
 gdf = not_na_rdf.groupby('member_name')['menu_name'].count().reset_index()

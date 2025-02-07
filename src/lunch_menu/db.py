@@ -38,7 +38,7 @@ def insert_menu(menu_name, member_id, dt):
         return False
 
 
-def select_table(menu_name, member_name, dt):
+def select_table():
     query = """
     SELECT
         l.menu_name,
