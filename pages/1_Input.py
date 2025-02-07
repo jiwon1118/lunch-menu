@@ -14,8 +14,8 @@ st.subheader("입력")
 menu_name = st.text_input("메뉴 이름", placeholder="예: 김치찌개")
 # selectbox 사용
 # member_name = st.text_input("먹은 사람", value="jiwon")
-member_name = st.selectbox("먹은 사람", list(members.keys()), index = list(members.keys()).index('jiwon'))
-# member_id = members 의 키
+member_name = st.selectbox("먹은 사람", options =  list(members.keys()), index = list(members.keys()).index('jiwon'))
+# member_id = members 의 키`
 member_id = members[member_name]
 
 dt = st.date_input("먹은 날짜")
