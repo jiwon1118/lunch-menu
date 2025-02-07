@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from lunch_menu.db import get_connection
-from lunch_menu.db import insert_menu
+from lunch_menu.db import insert_menu, select_table
 
 
 st.markdown("# Main page 🐽")
@@ -86,33 +86,10 @@ if isPress:
 
 
 st.subheader("확인")
-#query =  "SELECT menu_name, member_id, dt FROM lunch_menu ORDER BY dt DESC;"
-query = """
-SELECT 
-	l.menu_name, 
-	m.name, 
-	l.dt
-FROM 
-	lunch_menu l 
-    inner join member m
-	on l.member_id = m.id
-ORDER BY 
-    dt DESC;
-;
-"""
+select_df = select_table(menu_name, member_name, dt)
+select_df
 
-conn = get_connection()
-cursor = conn.cursor()
-cursor.execute(query)
-rows = cursor.fetchall()
 
-#conn.commit()
-cursor.close()
-conn.close()
-
-#selected_df = pd.DataFrame([[1,2,3]], columns=['a','b','c'])
-selected_df = pd.DataFrame(rows, columns=['menu_name','member_name','dt'])
-selected_df
 
 st.subheader("통계")
 #df = pd.read_csv('note/menu.csv')
@@ -122,10 +99,11 @@ st.subheader("통계")
 #gdf = not_na_rdf.groupby('ename')['menu'].count().reset_index()
 
 
-not_na_rdf = selected_df[~selected_df['menu_name'].isin(['-','<결석>','x'])]
+not_na_rdf = select_df[~select_df['menu_name'].isin(['-','<결석>','x'])]
 gdf = not_na_rdf.groupby('member_name')['menu_name'].count().reset_index()
 gdf
 
+st.subheader("차트")
 # matplotlib로 바 차트 그리기
 #오류 안 뜨게 하기
 try:
