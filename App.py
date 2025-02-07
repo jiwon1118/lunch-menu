@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import psycopg
-import os
-from dotenv import load_dotenv
+from lunch_menu.db import get_connection
 
 st.markdown("# Main page 🐽")
 st.sidebar.markdown("# Main page 🐽")
@@ -14,20 +12,8 @@ Today's *LUNCH!*
 
 ![img](https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMjA0MThfMTcx%2FMDAxNjUwMjg2NTA2OTUz.KAmjW9nEn4DkwLbDXK9K_PQvPhE1ebEYaVIN8xfyF7Qg._lVvsBJN7gsdkm35f1PExK1LdtcoiMC1qpRjHaOUIJIg.JPEG.exo8010%2Fresource%25A3%25A863%25A3%25A9.jpg&type=sc960_832)""")
 
+
 members = {"SEO": 5, "TOM": 1, "cho": 2, "hyun": 3, "nuni": 10, "JERRY": 4, "jacob": 7, "jiwon": 6, "lucas": 9, "heejin": 8}
-
-load_dotenv()
-db_name = os.getenv("DB_NAME")
-DB_CONFIG = {
-    "user": os.getenv("DB_USERNAME"),
-    "dbname": db_name,
-    "password": os.getenv("DB_PASSWORD"),
-    "host": os.getenv("DB_HOST"),
-    "port": os.getenv("DB_PORT")
-}
-
-def get_connection():
-    return psycopg.connect(**DB_CONFIG)
 
 def insert_menu(menu_name, member_id, dt):
     try:
@@ -44,7 +30,6 @@ def insert_menu(menu_name, member_id, dt):
     except Exception as e:
         print(f"Exception:{e}")
         return False
-
 
 st.subheader("입력")
 menu_name = st.text_input("메뉴 이름", placeholder="예: 김치찌개")
