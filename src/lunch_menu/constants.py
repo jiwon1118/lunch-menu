@@ -1,0 +1,1 @@
+API_AGE = "https://agecal.wodan10.shop/api/py/ageCalculator"
