@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import datetime
 import lunch_menu.constants as const
 
 st.set_page_config(page_title="API", page_icon="🍽️")
@@ -7,8 +8,10 @@ st.set_page_config(page_title="API", page_icon="🍽️")
 st.markdown("# 나이 계산기🧮")
 st.sidebar.header("나이 계산기🧮")
 
+today = datetime.date.today()  
+min_date = datetime.date(1900, 1, 1)
 
-dt = st.date_input("생일 입력") #min_value=None, max_value=None
+dt = st.date_input("생일 입력", min_value=min_date, max_value=today)
 if st.button("메뉴 저장"):
     headers = {
         'accept': 'application/json'
